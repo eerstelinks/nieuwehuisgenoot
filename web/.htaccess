@@ -1,0 +1,25 @@
+Options +FollowSymLinks -MultiViews -Indexes
+
+RewriteEngine On
+RewriteBase /
+
+AddType application/json .json
+
+# remove www. before every URL (the HTTPS version with SSL)
+RewriteCond %{HTTPS} =on
+RewriteCond %{HTTP_HOST} ^www.(.+)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+# remove www. before every URL (the HTTP version)
+RewriteCond %{HTTPS} !=on
+RewriteCond %{HTTP_HOST} ^www.(.+)$ [NC]
+RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+
+# remove trailing slash
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+# show api error in json
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} ^/(api/.*)$
+RewriteRule ^(.*)$ /api/error.php [L]
